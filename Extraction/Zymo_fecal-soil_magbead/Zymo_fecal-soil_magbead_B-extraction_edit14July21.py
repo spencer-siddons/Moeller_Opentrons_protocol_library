@@ -61,7 +61,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # define deck positions and labware
 
     # define hardware modules
-    magblock = protocol.load_module('Magnetic Module', 10)
+    magblock = protocol.load_module('Magnetic Module_gen2', 10)
     magblock.disengage()
 
     # tips
@@ -89,8 +89,8 @@ def run(protocol: protocol_api.ProtocolContext):
     mag_plate = magblock.load_labware('vwr_96_wellplate_1000ul')
 
     # initialize pipettes
-    pipette_left = protocol.load_instrument('p300_multi',
-                                            'left',
+    pipette_right = protocol.load_instrument('p300_multi_gen2',
+                                            'right',
                                             tip_racks=[tiprack_buffers])
 
     # MagBindingBuffer + beads wells
@@ -113,7 +113,7 @@ def run(protocol: protocol_api.ProtocolContext):
     protocol.comment('Adding beads to plate.')
 
     # add beads
-    mbb_remaining, mbb_wells = add_buffer(pipette_left,
+    mbb_remaining, mbb_wells = add_buffer(pipette_right,
                                           mbb_wells,
                                           mag_plate,
                                           cols,
@@ -123,11 +123,11 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # mix beads and samples
     for col in cols:
-        pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
-        pipette_left.mix(10, 250, mag_plate[col].bottom(z=1))
-        pipette_left.blow_out(mag_plate[col].top(z=-2))
-        pipette_left.touch_tip()
-        pipette_left.return_tip()
+        pipette_right.pick_up_tip(tiprack_wash.wells_by_name()[col])
+        pipette_right.mix(10, 250, mag_plate[col].bottom(z=1))
+        pipette_right.blow_out(mag_plate[col].top(z=-2))
+        pipette_right.touch_tip()
+        pipette_right.return_tip()
 
     # bind to beads
     protocol.comment('Binding DNA to beads.')
@@ -135,11 +135,11 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # mix again
     for col in cols:
-        pipette_left.pick_up_tip(tiprack_wash.wells_by_name()[col])
-        pipette_left.mix(10, 250, mag_plate[col].bottom(z=1))
-        pipette_left.blow_out(mag_plate[col].top(z=-2))
-        pipette_left.touch_tip()
-        pipette_left.return_tip()
+        pipette_right.pick_up_tip(tiprack_wash.wells_by_name()[col])
+        pipette_right.mix(10, 250, mag_plate[col].bottom(z=1))
+        pipette_right.blow_out(mag_plate[col].top(z=-2))
+        pipette_right.touch_tip()
+        pipette_right.return_tip()
 
     # bind to magnet
     protocol.comment('Binding beads to magnet.')
@@ -153,7 +153,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                          # global arguments
                                          protocol,
                                          magblock,
-                                         pipette_left,
+                                         pipette_right,
                                          mag_plate,
                                          cols,
                                          # super arguments
@@ -177,7 +177,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                        # global arguments
                                        protocol,
                                        magblock,
-                                       pipette_left,
+                                       pipette_right,
                                        mag_plate,
                                        cols,
                                        # super arguments
@@ -202,7 +202,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                        # global arguments
                                        protocol,
                                        magblock,
-                                       pipette_left,
+                                       pipette_right,
                                        mag_plate,
                                        cols,
                                        # super arguments
@@ -227,7 +227,7 @@ def run(protocol: protocol_api.ProtocolContext):
                                        # global arguments
                                        protocol,
                                        magblock,
-                                       pipette_left,
+                                       pipette_right,
                                        mag_plate,
                                        cols,
                                        # super arguments
@@ -258,7 +258,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # - leave magnet engaged
 
     # remove supernatant
-    remove_supernatant(pipette_left,
+    remove_supernatant(pipette_right,
                        mag_plate,
                        cols,
                        tiprack_wash,
@@ -295,14 +295,14 @@ def run(protocol: protocol_api.ProtocolContext):
 
     # add elution buffer and mix
     for col in cols:
-        pipette_left.pick_up_tip(tiprack_elution_1.wells_by_name()[col])
-        pipette_left.aspirate(50, reagents['A8'], rate=1)
-        pipette_left.dispense(50, mag_plate[col].bottom(z=1))
-        pipette_left.mix(10, 40, mag_plate[col].bottom(z=1))
-        pipette_left.blow_out(mag_plate[col].top())
-        pipette_left.touch_tip()
+        pipette_right.pick_up_tip(tiprack_elution_1.wells_by_name()[col])
+        pipette_right.aspirate(50, reagents['A8'], rate=1)
+        pipette_right.dispense(50, mag_plate[col].bottom(z=1))
+        pipette_right.mix(10, 40, mag_plate[col].bottom(z=1))
+        pipette_right.blow_out(mag_plate[col].top())
+        pipette_right.touch_tip()
         # we'll use these same tips for final transfer
-        pipette_left.return_tip()
+        pipette_right.return_tip()
 
     protocol.delay(seconds=pause_elute)
     # # start timer
@@ -311,12 +311,12 @@ def run(protocol: protocol_api.ProtocolContext):
     # t_mix = 0
     # while t_mix < pause_elute():
     for col in cols:
-        pipette_left.pick_up_tip(tiprack_elution_1.wells_by_name()[col])
-        pipette_left.mix(10, 40, mag_plate[col].bottom(z=1))
-        pipette_left.blow_out(mag_plate[col].top())
-        pipette_left.touch_tip()
+        pipette_right.pick_up_tip(tiprack_elution_1.wells_by_name()[col])
+        pipette_right.mix(10, 40, mag_plate[col].bottom(z=1))
+        pipette_right.blow_out(mag_plate[col].top())
+        pipette_right.touch_tip()
         # we'll use these same tips for final transfer
-        pipette_left.return_tip()
+        pipette_right.return_tip()
         # t_mix = clock() - t0
 
     # bind to magnet
@@ -328,14 +328,14 @@ def run(protocol: protocol_api.ProtocolContext):
 
     protocol.comment('Transferring eluted DNA to final plate.')
     for col in cols:
-        pipette_left.pick_up_tip(tiprack_elution_2.wells_by_name()[col])
-        pipette_left.aspirate(50,
+        pipette_right.pick_up_tip(tiprack_elution_2.wells_by_name()[col])
+        pipette_right.aspirate(50,
                               mag_plate[col].bottom(z=2),
                               rate=bead_flow)
-        pipette_left.dispense(50, eluate[col])
-        pipette_left.blow_out(eluate[col].top())
-        pipette_left.touch_tip()
+        pipette_right.dispense(50, eluate[col])
+        pipette_right.blow_out(eluate[col].top())
+        pipette_right.touch_tip()
         # we're done with these tips now
-        pipette_left.drop_tip()
+        pipette_right.drop_tip()
 
     magblock.disengage()
